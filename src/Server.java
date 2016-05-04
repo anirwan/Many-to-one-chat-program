@@ -12,15 +12,16 @@ public class Server {
 
     private static final String LOGIN = "LOGIN";
     private static final String LOGGEDIN = "LOGGEDIN ";
+    private static final String ADMIN = "Admin";
+    private static final String MESSAGE = "MESSAGE ";
 
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private static final int PORT = 9090;
     private static HashSet<String> names = new HashSet<String>();
-    private static HashMap<String, PrintWriter> writers = new HashMap<String, PrintWriter>();
     private static HashMap<String, Frame> frames = new HashMap<String, Frame>();
 
     public static void main(String[] args) throws Exception {
-        logger.info("Server is running");
+        logger.info("Server is running\n");
         ServerSocket listener = new ServerSocket(PORT);
         try {
             while (true) {
@@ -66,6 +67,7 @@ public class Server {
                     synchronized (names) {
                         if (!names.contains(name)) {
                             if(checkLogin(name, password)) {
+                                logger.info("Login successful for " + name + " from: " + socket.getInetAddress() + "\n");
                                 names.add(name);
                                 break;
                             }
@@ -74,15 +76,14 @@ public class Server {
                 }
 
                 out.println(LOGGEDIN + name);
-                writers.put(name, out);
                 initializeGui(name, in, out);
 
                 while (true) {
                     String input = in.readLine();
                     if (input == null) {
                         return;
-                    } else if (input.startsWith("MESSAGE")) {
-                        frames.get(name).receiveText(input.substring(8) + "\n");
+                    } else if (input.startsWith(MESSAGE)) {
+                        frames.get(name).receiveText(input.substring(8));
                     }
                 }
             } catch (IOException e) {
@@ -94,9 +95,6 @@ public class Server {
                         frames.get(name).close();
                         frames.remove(name);
                     }
-                }
-                if (out != null) {
-                    writers.remove(out);
                 }
                 try {
                     socket.close();
@@ -114,18 +112,21 @@ public class Server {
         users.put("anir2", "asd");
         users.put("anir3", "asd");
 
+        logger.info("Server received credentials: " + "\n" +
+                "username: " + username + "\n" +
+                "password: " + password + "\n");
+
         if(users.containsKey(username) && users.get(username).equals(password)) {
-            logger.info("Login successful for username: " + username);
             return true;
-        } else {
-            logger.info("Login failed for username: " + username);
-            return false;
         }
+
+        logger.info("Login failed for username: " + username + "\n");
+        return false;
     }
 
     private static void initializeGui(String name, BufferedReader in, PrintWriter out) {
-        Frame frame = new Frame("Admin", name, in, out);
-        frame.setPrefix("MESSAGE ", "Admin");
+        Frame frame = new Frame(ADMIN, name, in, out);
+        frame.setPrefix(MESSAGE, ADMIN);
         frame.setEditable(true);
         frames.put(name, frame);
         frame.sendText("Greetings, " + name + ". How may I help you today?");
