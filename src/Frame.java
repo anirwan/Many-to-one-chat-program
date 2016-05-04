@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 /**
  * Created by anirwanchowdhury on 03/05/2016.
  */
+
 public class Frame {
 
     protected String name;
