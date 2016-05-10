@@ -21,12 +21,11 @@ public class Frame {
 
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-
     public Frame(String from, String to, BufferedReader in, PrintWriter out) {
         this.name = from;
         this.frame = new JFrame("Chatter :: " + from + " --> " + to);
-        this.textField = new JTextField(60);
-        this.textArea = new JTextArea(10, 60);
+        this.textField = new JTextField(40);
+        this.textArea = new JTextArea(10, 40);
 
         this.textField.setEditable(false);
         this.textArea.setEditable(false);
@@ -63,17 +62,13 @@ public class Frame {
     public void sendText(String message) {
         this.out.println(this.prefix + message);
         this.textArea.append(this.name + ": " + message + "\n");
-        logger.info("Frame["+ this.name + "] sent message: " + message + "\n");
+        logger.info("Frame["+ this.name + "] sent message: \"" + message + "\"\n");
     }
 
     public void receiveText(String message) {
         this.textArea.append(message + "\n");
-        logger.info("Frame["+ this.name + "] received message: " + message + "\n");
+        logger.info("Frame["+ this.name + "] received message: \"" + message + "\"\n");
     }
-
-//    public String getServerAddress() {
-//        return JOptionPane.showInputDialog(frame, "Enter IP Address of the Server:", "Welcome to the Chatter", JOptionPane.QUESTION_MESSAGE);
-//    }
 
     public void setEditable(boolean bool) {
         this.textField.setEditable(bool);

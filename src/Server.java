@@ -21,7 +21,6 @@ public class Server {
 
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private static final int PORT = 9090;
-    private static HashSet<String> names = new HashSet<String>();
     private static HashMap<String, Frame> frames = new HashMap<String, Frame>();
 
     public static void main(String[] args) throws Exception {
@@ -59,20 +58,20 @@ public class Server {
                     out.println(LOGIN);
                     input = in.readLine();
 
-
                     if (input == null) {
                         return;
                     }
 
                     string = input.split(";");
-                    name = string[0];
-                    password = string[1];
+                    if(string.length > 0) {
+                        name = string[0];
+                        password = string[1];
+                    }
 
-                    synchronized (names) {
-                        if (!names.contains(name)) {
+                    synchronized (frames) {
+                        if (!frames.containsKey(name)) {
                             if(checkLogin(name, password)) {
                                 logger.info("Login successful for " + name + " from: " + socket.getInetAddress() + "\n");
-                                names.add(name);
                                 break;
                             }
                         }
@@ -94,7 +93,6 @@ public class Server {
                 System.out.println(e);
             } finally {
                 if (name != null) {
-                    names.remove(name);
                     if(frames.get(name) != null) {
                         frames.get(name).close();
                         frames.remove(name);
@@ -120,7 +118,7 @@ public class Server {
                 "username: " + username + "\n" +
                 "password: " + password + "\n");
 
-        if(users.containsKey(username) && users.get(username).equals(password)) {
+        if(username != null && password != null && users.containsKey(username) && users.get(username).equals(password)) {
             return true;
         }
 

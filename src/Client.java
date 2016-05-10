@@ -17,8 +17,6 @@ public class Client {
     private static final String ADMIN = "Admin";
 
     Frame frame;
-    BufferedReader in;
-    PrintWriter out;
 
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
@@ -35,8 +33,6 @@ public class Client {
 
         String serverAddress = "localhost";
         Socket socket = new Socket(serverAddress, 9090);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
         frame.setIncoming(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         frame.setOutgoing(new PrintWriter(socket.getOutputStream(), true));
 
